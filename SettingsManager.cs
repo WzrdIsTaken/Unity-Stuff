@@ -14,7 +14,7 @@ using UnityEngine.Audio;
 ///     - Need to change the game object names for GameObject.Find in LoadSettings()?
 ///     - Names of the sliders in SliderInUse().
 /// Meant to be used with a SettingsMaster like script which stores the settings values in PlayerPrefs. I've copy / pasted that at the bottom of this script, the only 
-/// things that needs to change there is the PlayerPref keys. Just make sure they match with the SettingsManager script.
+/// things that needs to change there is the PlayerPref keys / default values. Just make sure they match with the SettingsManager script.
 /// </summary>
 
 // The front end for changing settings | Base Code: https://bit.ly/2TrHAK1 
