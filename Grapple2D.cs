@@ -23,7 +23,7 @@ public class Grapple2D : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && !isGrappling) Grapple(true);
         if (Input.GetMouseButtonUp(1)) Grapple(false);
 
-        // Grappling
+        // Toggle on / off line renderer
         if (isGrappling)
         {
             lineRenderer.SetPosition(0, grapplePoint.position);
