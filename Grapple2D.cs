@@ -11,7 +11,7 @@ public class Grapple2D : MonoBehaviour
 {
     [SerializeField] Camera cam;
     [SerializeField] DistanceJoint2D distanceJoint;
-    [SerializeField] LineRenderer lineRenderer;
+    [SerializeField] LineRenderer lineRenderer; // Edit this to chanage the look of the grappling hook.
     [SerializeField] Transform grapplePoint; // The point you want the grapple hook to be attached to the player.
 
     Vector2 grappledPosition;
@@ -23,7 +23,7 @@ public class Grapple2D : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && !isGrappling) Grapple(true);
         if (Input.GetMouseButtonUp(1)) Grapple(false);
 
-        // Toggle on / off line renderer
+        // Toggling on the line renderer (toggling off is done in the Grapple() method)
         if (isGrappling)
         {
             lineRenderer.SetPosition(0, grapplePoint.position);
@@ -45,8 +45,8 @@ public class Grapple2D : MonoBehaviour
             distanceJoint.connectedAnchor = mousePos;
 
             lineRenderer.positionCount = 2;
-            grappledPosition = mousePos;
-
+            grappledPosition = mousePos; 
+            
             isGrappling = true;
         }
         else
