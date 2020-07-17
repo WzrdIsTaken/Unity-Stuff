@@ -16,7 +16,7 @@ public class Grapple2D : MonoBehaviour
     [SerializeField] Transform grapplePoint; // The point you want the grapple hook to be attached to the player.
 
     Vector2 grappledPosition;
-    bool isGrappling; // Can be used for animations, restricting input (eg: can't attack while grappling), etc. Used in script to toggle on / off the line renderer.
+    bool isGrappling; // Can be used for animations, restricting input (eg: can't attack while grappling), etc. Used in this script to toggle on / off the line renderer.
 
     void Update ()
     {
