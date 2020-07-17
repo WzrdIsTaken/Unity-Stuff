@@ -2,6 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// A simple script that allows a 2D player to grapple around!
+/// Just attach it to your player gameobject and assign the various fields values.
 /// I would recommend that the player is a order in layer behind the stuff they will grapple onto, because then it won't seem like the grappling hook is going through walls.
 /// </summary>
 
