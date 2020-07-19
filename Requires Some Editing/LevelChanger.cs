@@ -13,8 +13,8 @@ using System.Collections;
 // Fades between scenes | Base Code: https://bit.ly/3clz9rP 
 public class LevelChanger : MonoBehaviour
 {
+    [SerializeField] Image progressWheel;
     Animator animator;
-    Image progressWheel;
     string levelToLoad;
     bool isFastLoad;
 
@@ -28,7 +28,6 @@ public class LevelChanger : MonoBehaviour
             DontDestroyOnLoad(this);
 
             animator = GetComponent<Animator>();
-            progressWheel = GameObject.Find("LoadingWheel").GetComponent<Image>();
             progressWheel.enabled = false;
         }
         else
