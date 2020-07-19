@@ -53,6 +53,13 @@ public class MusicManager : MonoBehaviour
     {
         string[] exposedParams = { "masterMixerVolume", "musicMixerVolume", "soundFxMixerVolume" };
         foreach (var item in exposedParams) mixer.SetFloat(item, Mathf.Log10(SettingsMaster.GetNum(item.Replace("Mixer", ""), true)) * 20);
+        
+        /* Spotted a potential bug here. If you're storing the volume in linear form then make sure you run a quick check to see if the user has set volume to 0.
+        Eg:
+            float vol = PlayerPrefs.GetFloat(item);
+            if (vol == 0) mixer.SetFloat(item, -80f);
+            else mixer.SetFloat(item, Mathf.Log10(vol) * 20);
+        */
     }
 
     public static void PlayMenuMusic () 
