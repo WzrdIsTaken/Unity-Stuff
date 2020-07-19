@@ -8,6 +8,8 @@ using System.Collections;
 /// Stuff to change if using for another project:
 ///     - The first scene name in OnFadeComplete().
 /// Just make sure you have an image with can be filled and an animation.
+///     - The idea is that the fade out animation is started in ChangeScene(), and then there is an event at the end of that animation which calls OnFadeComplete().
+///     - Then the scene is loaded and the fade in animation is triggered. 
 /// </summary>
 
 // Fades between scenes | Base Code: https://bit.ly/3clz9rP 
