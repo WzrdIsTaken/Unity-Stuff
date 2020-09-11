@@ -8,7 +8,7 @@ using UnityEngine.Audio;
 
 /// <summary>
 /// My solution for saving data via PlayerPrefs. 
-/// If you happen to look at this code before it gets updated like the SettingsMaster class, then, well, I would recommend you wait until it gets updated.
+/// If you happen to look at this code before it gets updated like the SettingsMaster class then, well, I would recommend you wait until it gets updated.
 /// </summary>
 
 // The front end for changing settings | Base Code: https://bit.ly/2TrHAK1 
