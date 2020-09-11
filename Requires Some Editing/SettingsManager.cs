@@ -243,7 +243,7 @@ public class SettingsMaster : MonoBehaviour
             // Graphics
             { "graphicsQuality", 3}, { "fullScreen", "true" }, { "resolutions" , CheckDefaultResolution() },
 
-            // Volume
+            // Sound
             { "masterVolume", 0.3f }, { "musicVolume", 0.3f }, { "soundFxVolume", 0.3f},
 
             // Username
