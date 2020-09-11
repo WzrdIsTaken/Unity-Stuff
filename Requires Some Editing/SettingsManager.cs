@@ -228,17 +228,20 @@ public class SettingsMaster : MonoBehaviour
             { "jump", "W" }, { "crouch", "S" }, { "left", "A" }, { "right", "D" }, 
 
             // Combat
-            { "shoot", "Mouse1"}, { "reload", "R" }, { "ability", "LeftShift" }, { "quickShiftLeft", "Q" }, { "quickShiftRight", "E" }, { "pistolSwitch", "Alpha0" }, { "lightSwitch", "Alpha1" }, { "shotgunSwitch", "Alpha2" },
-            { "rifleSwitch", "Alpha3" }, { "sniperSwitch", "Alpha4" }, { "heavySwitch", "Alpha5" }, { "explosiveSwitch", "Alpha6" },
+            { "shoot", "Mouse0"}, { "reload", "R" }, { "ability", "LeftShift" }, { "quickSwitchLeft", "Q" }, { "quickSwitchRight", "E" }, { "pistolSwitch", "Alpha1" }, { "lightSwitch", "Alpha2" }, { "shotgunSwitch", "Alpha3" },
+            { "rifleSwitch", "Alpha4" }, { "sniperSwitch", "Alpha5" }, { "heavySwitch", "Alpha6" }, { "explosiveSwitch", "Alpha7" },
 
             // Other
-            { "scoreBoard", "Tab" }, { "settings", "Escape"},
+            { "scoreboard", "Tab" }, { "settings", "Escape"},
 
             // Graphics
             { "graphicsQuality", 3}, { "fullScreen", "true" }, { "resolutions" , CheckDefaultResolution() },
 
             // Volume
-            { "masterVolume", 0.3f }, { "musicVolume", 0.3f }, { "soundFxVolume", 0.3f}
+            { "masterVolume", 0.3f }, { "musicVolume", 0.3f }, { "soundFxVolume", 0.3f},
+
+            // Username
+            { "username", "Player " + UnityEngine.Random.Range(0, 1000).ToString("0000") }
         };
     }
 
