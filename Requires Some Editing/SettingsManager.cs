@@ -190,9 +190,9 @@ The backend of saving data.
 Last updated on 11/09/20 and used in 'Raze But Mulitplayer'. 
 Note: If you use this, you have to use .NET 4.x (https://bit.ly/2Rjvm5G).
 
-To use this code:
-    - Attach this script to a GameObject.
-    - Change the keys and default values in SetDefaultValues().
+To use this script:
+    - Attach it to a GameObject.
+    - Change the keys and default values in SetDefaultValues().   
     - To set a PlayerPref -> SettingsMaster.SetValue(key, value); 
     - To get a PlayerPrefs -> SettingsMaster.GetValue<type>(key);
 
