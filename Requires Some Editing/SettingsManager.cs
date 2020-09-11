@@ -187,7 +187,7 @@ public class SettingsManager : MonoBehaviour
 /*
 
 The backend of saving data. 
-Last updated on 11/09/20.
+Last updated on 11/09/20 in Raze But Mulitplayer. The only stuff you really have to change is the defaultValues in SetDefaultValues().
 Note: If you use this, you have to use .NET 4.x (https://bit.ly/2Rjvm5G).
 
 using UnityEngine;
