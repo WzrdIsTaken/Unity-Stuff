@@ -7,14 +7,8 @@ using System.Collections;
 using UnityEngine.Audio;
 
 /// <summary>
-/// Originally used in Neon Dawn. 
-/// Stuff to change if using for another project:
-///     - The exposed param names (MASTER_VOLUME, etc).
-///     - The control / exposed param names in LoadSettings().
-///     - Need to change the game object names for GameObject.Find in LoadSettings()?
-///     - Names of the sliders in SliderInUse().
-/// Meant to be used with a SettingsMaster like script which stores the settings values in PlayerPrefs. I've copy / pasted that at the bottom of this script, the only 
-/// things that needs to change there is the PlayerPref keys / default values. Just make sure they match with the SettingsManager script.
+/// My solution for saving data via PlayerPrefs. 
+/// If you happen to look at this code before it gets updated like the SettingsMaster class, then, well, I would recommend you wait until it gets updated.
 /// </summary>
 
 // The front end for changing settings | Base Code: https://bit.ly/2TrHAK1 
@@ -192,66 +186,74 @@ public class SettingsManager : MonoBehaviour
 
 /*
 
+The backend of saving data. 
+Last updated on 11/09/20.
+Note: If you use this, you have to use .NET 4.x (https://bit.ly/2Rjvm5G).
+
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
-// Manages + stores settings infomation
+// The backend for storing data
 public class SettingsMaster : MonoBehaviour
 {
     Resolution[] resolutions;
+    Dictionary<string, dynamic> defaultValues;
 
     static SettingsMaster settingsMaster;
 
-    void Awake()
+    void Awake ()
     {
-        if (settingsMaster == null)
+        if (settingsMaster)
         {
-            settingsMaster = this;
-            DontDestroyOnLoad(this);
-
-            resolutions = Screen.resolutions; 
-
-            #region PlayerPrefs
-
-            PlayerPrefs.GetString("forward", "W");           PlayerPrefs.GetString("left", "A");
-            PlayerPrefs.GetString("backward", "S");          PlayerPrefs.GetString("right", "D");
-            PlayerPrefs.GetString("crouch", "LeftShift");    PlayerPrefs.GetString("slide", "LeftControl");
-            PlayerPrefs.GetString("jump", "Space");          PlayerPrefs.GetString("grapple", "E");
-            PlayerPrefs.GetString("ultimate", "Q");          PlayerPrefs.GetString("reload", "R");
-            PlayerPrefs.GetString("primaryFire", "Mouse0");  PlayerPrefs.GetString("secondaryFire", "Mouse1");
-            PlayerPrefs.GetString("pause", "Escape");
-
-            PlayerPrefs.GetFloat("masterVolume", 0.3f);      PlayerPrefs.GetFloat("musicVolume", 0.3f); // Volume stored in linear form, not logarithmic.
-            PlayerPrefs.GetFloat("soundFxVolume", 0.3f);
-
-            PlayerPrefs.GetInt("graphicsQuality", 3);        PlayerPrefs.GetInt("resolution", CheckDefaultResolution());
-            PlayerPrefs.GetString("fullScreen", "true");
-
-            #endregion
-        }
-        else
-        {
-            Destroy(this);
+            Destroy(gameObject);
             return;
         }
+        DontDestroyOnLoad(gameObject);
+        settingsMaster = this;      
     }
 
-    void Start () 
+    void Start ()
     {
-        SetStartingValues();
+        resolutions = Screen.resolutions;
+        SetDefaultValues();
+        SetGraphicsSettings();
     }
 
-    void SetStartingValues ()
+    void SetDefaultValues ()
     {
-        QualitySettings.SetQualityLevel(GetNum("graphicsQuality"));
-        Screen.fullScreen = Convert.ToBoolean(GetValue("fullScreen"));
-        var defaultResolution = resolutions[GetNum("resolution")];
+        defaultValues = new Dictionary<string, dynamic>
+        {
+            // Movement
+            { "jump", "W" }, { "crouch", "S" }, { "left", "A" }, { "right", "D" }, 
+
+            // Combat
+            { "shoot", "Mouse1"}, { "reload", "R" }, { "ability", "LeftShift" }, { "quickShiftLeft", "Q" }, { "quickShiftRight", "E" }, { "pistolSwitch", "Alpha0" }, { "lightSwitch", "Alpha1" }, { "shotgunSwitch", "Alpha2" },
+            { "rifleSwitch", "Alpha3" }, { "sniperSwitch", "Alpha4" }, { "heavySwitch", "Alpha5" }, { "explosiveSwitch", "Alpha6" },
+
+            // Other
+            { "scoreBoard", "Tab" }, { "settings", "Escape"},
+
+            // Graphics
+            { "graphicsQuality", 3}, { "fullScreen", "true" }, { "resolutions" , CheckDefaultResolution() },
+
+            // Volume
+            { "masterVolume", 0.3f }, { "musicVolume", 0.3f }, { "soundFxVolume", 0.3f}
+        };
+    }
+
+    void SetGraphicsSettings ()
+    {
+        QualitySettings.SetQualityLevel(GetValue<int>("graphicsQuality"));
+        Screen.fullScreen = Convert.ToBoolean(GetValue<string>("fullScreen"));
+
+        Resolution defaultResolution = resolutions[GetValue<int>("resolutions")];
         Screen.SetResolution(defaultResolution.width, defaultResolution.height, Screen.fullScreen);
     }
 
     int CheckDefaultResolution ()
     {
-        var defaultResolution = 0;
+        int defaultResolution = 0;
         for (int i = 0; i < resolutions.Length; i++)
         {
             if (resolutions[i].width == Screen.width && resolutions[i].height == Screen.height) defaultResolution = i;
@@ -265,31 +267,36 @@ public class SettingsMaster : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    public static void SetValue (string key, float value)
-    {
-        PlayerPrefs.SetFloat(key, value);
-        PlayerPrefs.Save();
-    }
-
     public static void SetValue (string key, int value)
     {
         PlayerPrefs.SetInt(key, value);
         PlayerPrefs.Save();
     }
 
-    public static string GetValue (string key)
+    public static void SetValue (string key, float value)
     {
-        return PlayerPrefs.GetString(key);
+        PlayerPrefs.SetFloat(key, value);
+        PlayerPrefs.Save();
     }
 
-    public static float GetNum (string key, bool isFloat) 
+    public static T GetValue<T> (string key)
     {
-        return PlayerPrefs.GetFloat(key);
+        return (T)Convert.ChangeType(settingsMaster.ReturnValue(key, settingsMaster.defaultValues[key]), typeof(T));
     }
 
-    public static int GetNum (string key) 
+    string ReturnValue (string key, string defaultValue)
     {
-        return PlayerPrefs.GetInt(key);
+        return PlayerPrefs.GetString(key, defaultValue);
+    }
+
+    int ReturnValue (string key, int defaultValue)
+    {
+        return PlayerPrefs.GetInt(key, defaultValue);
+    }
+
+    float ReturnValue (string key, float defaultValue)
+    {
+        return PlayerPrefs.GetFloat(key, defaultValue);
     }
 }
 
