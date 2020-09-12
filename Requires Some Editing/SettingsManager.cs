@@ -1,81 +1,98 @@
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System;
-using System.Linq;
-using System.Collections;
-using UnityEngine.Audio;
-
 /// <summary>
 /// My solution for saving data via PlayerPrefs. 
-/// If you happen to look at this code before it gets updated like the SettingsMaster class then, well, I would recommend you wait until it gets updated.
-/// The SettingsMaster script (found at the bottom) works without the SettingsManager, it is updated and I think pretty good. Just look at the SettingsManager code for a rough 
-/// reminder of how to make a settings scene. Because some of it is kind of bot.
+/// I think the SettingsMaster script is pretty decent (found at the bottom) but the SettingsManager is still kind of bot in places.
+/// SettingsMaster works without SettingsManager, but if you're doing that you might as well just use PlayerPrefs or hardcode the values.
 /// </summary>
 
-// The front end for changing settings | Base Code: https://bit.ly/2TrHAK1 
+/*
+The frontend for saving data via PlayerPrefs.
+Last updated on 12/09/20 and used in 'Raze but Multiplayer'.
+Note: To use this script you must be using SettingsMaster.
+
+To use this script:
+    - Attach it to a GameObject.
+    - Change / assign the relevant values (audiomixer, dropdowns, names of gameobjects to find in LoadControlSettings() and LoadVolumeSettings()).
+    - For the UI objects:
+        - Key buttons: ChangeKey().
+        - Volume sliders: SetVolume().
+        - Graphics dropdowns: The relevant function with a dynamic int.
+*/
+
+using TMPro;
+using System;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Audio;
+using System.Collections;
+using System.Collections.Generic;
+
+// The frontend for storing data
 public class SettingsManager : MonoBehaviour
 {
     [SerializeField] AudioMixer mixer;
+    [SerializeField] TMP_Dropdown resolutionDropdown, fullScreenDropdown, graphicsQualityDropDown;
+
     Resolution[] resolutions;
     Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>();
     GameObject currentKey;
     const float INVALID_SHOW_TIME = 0.2f;
-    const string MASTER_VOLUME = "masterMixerVolume", MUSIC_VOLUME = "musicMixerVolume", SOUNDFX_VOLUME = "soundFxMixerVolume";
-    bool masterSlider, musicSlider, soundFxSlider, dontUpdateVolume;
 
-    Color32 normal = new Color32(190, 190, 190, 255);
-    Color32 selected = new Color32(230, 230, 230, 255);
-    Color32 invalid = new Color32(150, 0, 0, 255);
+    readonly Color32 normal = new Color32(190, 190, 190, 255);
+    readonly Color32 selected = new Color32(230, 230, 230, 255);
+    readonly Color32 invalid = new Color32(150, 0, 0, 255);
 
-    public void LoadSettings ()
+    void OnEnable ()
     {
-        dontUpdateVolume = true;
+        LoadControlsSettings();
+    }
+
+    public void LoadControlsSettings ()
+    {
         keys.Clear();
-
-        // Controls
-        var list = new List<string> { "forward", "backward", "left", "right", "crouch", "slide", "jump", "grapple", "ultimate", "primaryFire", "secondaryFire", "reload", "pause" };
-        string textObjectName = "ButtonText";
-        foreach (var item in list)
+        string[] keysArr = new string[] { "jump", "crouch", "left", "right", "shoot", "reload", "quickSwitchLeft", "quickSwitchRight", "pistolSwitch", "lightSwitch", "shotgunSwitch", "rifleSwitch", "sniperSwitch", "heavySwitch",
+                                          "explosiveSwitch", "scoreboard", "settings" };
+        foreach (string item in keysArr)
         {
-            var value = SettingsMaster.GetValue(item);
+            string value = SettingsMaster.GetValue<string>(item);
             keys.Add(item, (KeyCode)Enum.Parse(typeof(KeyCode), value));
-            GameObject.Find(item + textObjectName).GetComponent<Text>().text = value;
+            GameObject.Find(item + "ButtonText").GetComponent<TMP_Text>().text = value;
         }
+    }
 
-        // Volume
-        list.Clear();
-        list.Add("masterVolume"); list.Add("musicVolume"); list.Add("soundFxVolume");
-        textObjectName = "Slider";
-        foreach (var item in list) GameObject.Find(item + textObjectName).GetComponent<Slider>().value = SettingsMaster.GetNum(item, true);
+    public void LoadVolumeSettings ()
+    {
+        string[] paramArr = new string[] { "masterVolume", "musicVolume", "soundFxVolume" };
+        foreach (string item in paramArr) GameObject.Find(item + "Slider").GetComponent<Slider>().value = SettingsMaster.GetValue<float>(item);
+    }
 
-        GameObject.Find("masterVolume" + textObjectName).GetComponent<Slider>().value = PlayerPrefs.GetFloat("masterVolume");
-
-        // Graphics
-        var resolutionDropdown = GameObject.Find("ResolutionOptions").GetComponent<Dropdown>();
+    public void LoadGraphicsSettings ()
+    {
+        // Resolution
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
-        var resolutionOptions = new List<string>();
-        var currentResolutionIndex = 0;
+        List<string> resolutionOptions = new List<string>();
+        int currentResolutionIndex = 0;
         for (int i = 0; i < resolutions.Length; i++)
         {
             resolutionOptions.Add(resolutions[i].width + " x " + resolutions[i].height);
             if (resolutions[i].width == Screen.width && resolutions[i].height == Screen.height) currentResolutionIndex = i;
         }
         resolutionDropdown.AddOptions(resolutionOptions);
-        resolutionDropdown.value = currentResolutionIndex;
+        resolutionDropdown.value = SettingsMaster.GetValue<int>("resolution");
         resolutionDropdown.RefreshShownValue();
 
-        GameObject.Find("FullScreenToggle").GetComponent<Toggle>().isOn = Convert.ToBoolean(SettingsMaster.GetValue("fullScreen"));
+        // Fullscreen
+        fullScreenDropdown.value = SettingsMaster.GetValue<int>("fullScreen");
+        fullScreenDropdown.RefreshShownValue();
 
-        var graphicsDropDown = GameObject.Find("GraphicsOptions").GetComponent<Dropdown>();
-        graphicsDropDown.value = SettingsMaster.GetNum("graphicsQuality");
-        graphicsDropDown.RefreshShownValue();
-
-        dontUpdateVolume = false;
+        // Graphics quality
+        graphicsQualityDropDown.value = SettingsMaster.GetValue<int>("graphicsQuality");
+        graphicsQualityDropDown.RefreshShownValue();
     }
 
-    // Controls
+    #region Controls
+
     void OnGUI ()
     {
         if (currentKey == null) return;
@@ -97,17 +114,17 @@ public class SettingsManager : MonoBehaviour
     }
 
     void UpdateKey (KeyCode key)
-    {   
+    {
         if (key == KeyCode.None) return;
         if (keys.ContainsValue(key))
-        { 
+        {
             StartCoroutine(InvalidKey(keys.First(x => x.Value == key).Key)); // Passes in the name of the invalid key GameObject to the InvalidKey method, found via the value (the KeyCode 'key'). 
             currentKey.GetComponent<Image>().color = normal;
             currentKey = null;
-            return; 
+            return;
         }
 
-        var keyName = currentKey.name;
+        string keyName = currentKey.name;
         keys[keyName] = key;
         SettingsMaster.SetValue(keyName, key.ToString());
         currentKey.GetComponentInChildren<Text>().text = key.ToString();
@@ -125,65 +142,52 @@ public class SettingsManager : MonoBehaviour
 
     IEnumerator InvalidKey (string invalidKey)
     {
-        var keyColour = GameObject.Find(invalidKey).GetComponent<Image>();
+        Image keyColour = GameObject.Find(invalidKey).GetComponent<Image>();
         keyColour.color = invalid;
 
         yield return new WaitForSecondsRealtime(INVALID_SHOW_TIME);
         keyColour.color = normal;
     }
 
-    // Sound
-    public void SliderInUse (GameObject slider)
-    {
-        switch (slider.name)
-        {
-            case "masterVolume":
-                masterSlider = true; musicSlider = false; soundFxSlider = false;
-                break;
-            case "musicVolume":
-                masterSlider = false; musicSlider = true; soundFxSlider = false;
-                break;
-            case "soundFxVolume":
-                masterSlider = false; musicSlider = false; soundFxSlider = true;
-                break;
-        }
-    }
+    #endregion
 
-    public void SetVolume (float volume)
-    {
-        if (dontUpdateVolume) return;
+    #region Audio
 
-        if (masterSlider) UpdateVolume(volume, MASTER_VOLUME);
-        if (musicSlider) UpdateVolume(volume, MUSIC_VOLUME);
-        if (soundFxSlider) UpdateVolume(volume, SOUNDFX_VOLUME);
-    }
-
-    void UpdateVolume (float volume, string exposedParam)
+    public void SetVolume (Slider slider)
     {
-        var vol = Mathf.Log10(volume) * 20;
+        string exposedParam = slider.name.Replace("Slider", string.Empty);
+        float volume = slider.value; // Linear
+
+        float vol = Mathf.Log10(volume) * 20; // Convert the linear audio value (0-1) to logarithmic. 
         if (volume == 0) vol = -80f;
         mixer.SetFloat(exposedParam, vol);
-        SettingsMaster.SetValue(exposedParam.Replace("Mixer", ""), volume);
+        SettingsMaster.SetValue(exposedParam, volume);
     }
 
-    // Graphics
+    #endregion
+
+    #region Graphics
+
     public void SetQuality (int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
         SettingsMaster.SetValue("graphicsQuality", qualityIndex);
     }
 
-    public void ToggleFullScreen (bool isFullscreen)
+    public void SetFullScreenMode (int isFullScreen)
     {
-        Screen.fullScreen = isFullscreen;
-        SettingsMaster.SetValue("fullScreen", isFullscreen.ToString().ToLower());
+        Screen.fullScreen = Convert.ToBoolean(isFullScreen);
+        SettingsMaster.SetValue("fullScreen", isFullScreen); 
     }
 
     public void SetResolution (int resolutionIndex)
     {
         Resolution resolution = resolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+        SettingsMaster.SetValue("resolution", resolutionIndex);
     }
+
+    #endregion
 }
 
 /*
