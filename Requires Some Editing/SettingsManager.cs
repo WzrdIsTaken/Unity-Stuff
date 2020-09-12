@@ -27,7 +27,7 @@ using UnityEngine.Audio;
 using System.Collections;
 using System.Collections.Generic;
 
-// The frontend for storing data
+// The frontend for storing data via PlayerPrefs.
 public class SettingsManager : MonoBehaviour
 {
     [SerializeField] AudioMixer mixer;
@@ -192,7 +192,7 @@ public class SettingsManager : MonoBehaviour
 
 /*
 
-The backend of saving data. 
+The backend of saving data via PlayerPrefs. 
 Last updated on 11/09/20 and used in 'Raze But Mulitplayer'. 
 Note: If you use this, you have to use .NET 4.x (https://bit.ly/2Rjvm5G).
 
@@ -206,7 +206,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-// The backend for storing data
+// The backend for storing data via PlayerPrefs
 public class SettingsMaster : MonoBehaviour
 {
     Resolution[] resolutions;
