@@ -13,8 +13,9 @@ To use this script:
     - Attach it to a GameObject.
     - Change / assign the relevant values (audiomixer, dropdowns, names of gameobjects to find in LoadControlSettings() and LoadVolumeSettings()).
     - For the UI objects:
-        - Key buttons: ChangeKey().
-        - Volume sliders: SetVolume().
+        - Key buttons: Assign ChangeKey() as the event and make sure that the name of the GameObject is the same as the key for the PlayerPref it represents (eg: the 'Jump'
+                       button should have the name 'jump' if the key for the PlayerPref is 'jump'). 
+        - Volume sliders: Assign SetVolume() as the event and make sure that the name of the exposed param + 'Slider' is the same as the relevant UI slider.
         - Graphics dropdowns: The relevant function with a dynamic int.
 */
 
@@ -127,7 +128,7 @@ public class SettingsManager : MonoBehaviour
         string keyName = currentKey.name;
         keys[keyName] = key;
         SettingsMaster.SetValue(keyName, key.ToString());
-        currentKey.GetComponentInChildren<Text>().text = key.ToString();
+        currentKey.GetComponentInChildren<TMP_Text>().text = key.ToString();
         currentKey.GetComponent<Image>().color = normal;
         currentKey = null;
     }
