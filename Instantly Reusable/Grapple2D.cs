@@ -38,8 +38,7 @@ public class Grapple2D : MonoBehaviour
         if (grappling)
         {
             Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-            RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
             if (hit.collider == null) return; // Can easily limit what the player can grapple onto with a tag check here.
 
             distanceJoint.enabled = true;
